@@ -18,12 +18,12 @@ WORKDIR ${APP_DIR}
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 \
     go build -gcflags "all=-N -l" -o /gpdb
 
-FROM centos:centos7 AS prod_img
-RUN yum -y update
+FROM alpine:latest AS prod_img
+RUN apk update
 COPY --from=dev_img /gpdb /usr/bin/
-RUN useradd --create-home --shell /bin/bash gpadmin
+RUN adduser -h /home/gpadmin -s /bin/bash -D gpadmin gpadmin
 USER gpadmin
 WORKDIR /home/gpadmin
 COPY ./config.yml ${WORKDIR}
 
-CMD ["/bin/bash"]
+CMD ["/bin/sh"]
